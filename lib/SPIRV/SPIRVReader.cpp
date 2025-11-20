@@ -1858,7 +1858,7 @@ Value *SPIRVToLLVM::transValueWithoutDecoration(SPIRVValue *BV, Function *F,
     if (Size)
       S = Builder.getInt64(Size);
     Value *Var = transValue(LTStart->getObject(), F, BB);
-    CallInst *Start = Builder.CreateLifetimeStart(Var, S);
+    CallInst *Start = Builder.CreateLifetimeStart(Var);
     return mapValue(BV, Start);
   }
 
@@ -1872,8 +1872,8 @@ Value *SPIRVToLLVM::transValueWithoutDecoration(SPIRVValue *BV, Function *F,
     auto *Var = transValue(LTStop->getObject(), F, BB);
     for (const auto &I : Var->users())
       if (auto *II = getLifetimeStartIntrinsic(dyn_cast<Instruction>(I)))
-        return mapValue(BV, Builder.CreateLifetimeEnd(II->getOperand(1), S));
-    return mapValue(BV, Builder.CreateLifetimeEnd(Var, S));
+        return mapValue(BV, Builder.CreateLifetimeEnd(II->getOperand(1)));
+    return mapValue(BV, Builder.CreateLifetimeEnd(Var));
   }
 
   case OpStore: {
@@ -2661,7 +2661,7 @@ Value *SPIRVToLLVM::transValueWithoutDecoration(SPIRVValue *BV, Function *F,
     case SPIRVEIS_OpenCL_DebugInfo_100:
     case SPIRVEIS_NonSemantic_Shader_DebugInfo_100:
     case SPIRVEIS_NonSemantic_Shader_DebugInfo_200:
-      if (!M->IsNewDbgInfoFormat) {
+      if (1 /*!M->IsNewDbgInfoFormat*/) {
         return mapValue(
             BV, cast<Instruction *>(DbgTran->transDebugIntrinsic(ExtInst, BB)));
       } else {
@@ -3915,11 +3915,11 @@ bool SPIRVToLLVM::translate() {
 bool SPIRVToLLVM::transAddressingModel() {
   switch (BM->getAddressingModel()) {
   case AddressingModelPhysical64:
-    M->setTargetTriple(SPIR_TARGETTRIPLE64);
+    M->setTargetTriple(llvm::Triple(std::string(SPIR_TARGETTRIPLE64)));
     M->setDataLayout(SPIR_DATALAYOUT64);
     break;
   case AddressingModelPhysical32:
-    M->setTargetTriple(SPIR_TARGETTRIPLE32);
+    M->setTargetTriple(llvm::Triple(SPIR_TARGETTRIPLE32));
     M->setDataLayout(SPIR_DATALAYOUT32);
     break;
   case AddressingModelLogical:

@@ -1606,7 +1606,7 @@ SPIRVToLLVMDbgTran::transDebugIntrinsic(const SPIRVExtInst *DebugInst,
     }
     if (!MDs.empty()) {
       DIArgList *AL = DIArgList::get(M->getContext(), MDs);
-      if (M->IsNewDbgInfoFormat) {
+      if (1 /*M->IsNewDbgInfoFormat*/) {
         cast<DbgVariableRecord>(cast<DbgRecord *>(DbgValIntr))
             ->setRawLocation(AL);
       } else {

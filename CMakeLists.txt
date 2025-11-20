@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.13.4)
 
 if(NOT DEFINED BASE_LLVM_VERSION)
-  set (BASE_LLVM_VERSION 20.1.0)
+  set (BASE_LLVM_VERSION 22.0.0)
 endif(NOT DEFINED BASE_LLVM_VERSION)
-set(LLVM_SPIRV_VERSION ${BASE_LLVM_VERSION}.0)
+set(LLVM_SPIRV_VERSION ${BASE_LLVM_VERSION})
 
 include(FetchContent)
 include(FindPkgConfig)
